@@ -16,4 +16,4 @@ A powerful and flexible recon tool for ethical hackers, bug bounty hunters, and 
 
  Scan full port range with 500 threads
 ```bash
-python3 scanner.py 192.168.0.1 -s 1 -e 65535 -t 500
+python3 minscanner.py 192.168.0.1 -s 1 -e 65535 -t 500
