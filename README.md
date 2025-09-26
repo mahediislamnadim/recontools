@@ -56,3 +56,26 @@ Contributions welcome — open issues or PRs on GitHub: https://github.com/mahed
 ## License
 
 Add a LICENSE file if you want to specify terms.
+
+## tools/ctf_scanner.py (optional dynamic scanning)
+
+The `tools/ctf_scanner.py` script is an auxiliary scanner that extracts interesting HTML tags and attributes from a list of URLs. It supports two modes:
+
+- Static (default): Uses `requests` + BeautifulSoup to fetch and parse HTML. This mode works without a browser or Selenium and is suitable for most quick checks.
+- Dynamic (optional): If `selenium` and a browser driver (e.g., Chrome + chromedriver) are available, the scanner will use Selenium to render JavaScript and extract content that only appears after page load.
+
+Basic usage (static):
+
+```bash
+printf "http://example.com\n" > urls.txt
+python3 tools/ctf_scanner.py -i urls.txt --concurrency 4
+```
+
+If Selenium is available and you want dynamic rendering, install the optional dependencies from `requirements.txt` and run the scanner normally; it will auto-detect Selenium and use it.
+
+Outputs:
+- khoba_output/results.json - per-URL JSON summary
+- khoba_output/results.csv  - CSV summary
+- khoba_output/html/        - saved HTML files per URL
+
+Note: Dynamic Selenium runs require a working browser driver. If Selenium is missing, the scanner falls back to the static requests-based extractor.
