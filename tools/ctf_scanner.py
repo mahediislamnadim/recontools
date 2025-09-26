@@ -16,7 +16,7 @@ import csv
 import time
 import argparse
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List, Dict, Any
 import concurrent.futures
 import logging
@@ -128,7 +128,7 @@ def scan_single_url_selenium(url: str, show_browser: bool = False, wait_after: f
         "custom_attributes": [],
         "saved_html": None,
         "error": None,
-        "fetched_at": datetime.utcnow().isoformat() + "Z"
+    "fetched_at": datetime.now(timezone.utc).isoformat()
     }
 
     driver = None
@@ -237,7 +237,7 @@ def scan_single_url_requests(url: str, wait_after: float = WAIT_AFTER_LOAD) -> D
         "custom_attributes": [],
         "saved_html": None,
         "error": None,
-        "fetched_at": datetime.utcnow().isoformat() + "Z"
+    "fetched_at": datetime.now(timezone.utc).isoformat()
     }
     headers = {"User-Agent": "ctf-scanner/1.0 (+https://github.com)"}
     try:
