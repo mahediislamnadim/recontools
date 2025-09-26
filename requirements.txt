@@ -1,3 +1,13 @@
+requests>=2.31.0
+python-whois>=0.7
+rich>=13.0.0
+urllib3>=2.0.0
+
+# Optional (for Selenium-based dynamic rendering)
+beautifulsoup4>=4.12.2
+selenium>=4.10.0
+webdriver-manager>=4.0.0
+flask>=2.2.5
 requests
 python-whois
 rich
@@ -13,4 +23,5 @@ urllib3>=2.0.0
 beautifulsoup4>=4.12.2
 selenium>=4.10.0
 webdriver-manager>=4.0.0
+flask>=2.2.5
 ```
