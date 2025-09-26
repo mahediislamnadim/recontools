@@ -55,6 +55,10 @@ LOG_FILE = OUTPUT_DIR / "scanner.log"
 CONCURRENCY = 4
 WAIT_AFTER_LOAD = 1.0  # seconds to wait after page load for JS
 NAV_TIMEOUT = 30  # seconds (webdriver page_load_timeout)
+# Feature flags (updated from CLI in main())
+EXTERNAL_JS_FETCH = False
+SCREENSHOT_ENABLED = False
+FORCE_SELENIUM = False
 # -------------------------------------------
 
 # Ensure dirs exist before logging/file operations
@@ -141,6 +145,60 @@ def extract_from_html(html: str) -> Dict[str, List[str]]:
     }
 
 
+def extract_from_js(html: str, base_url: str = None, fetch_external: bool = False) -> Dict[str, List[str]]:
+    """Extract custom element names from inline JS and (optionally) external JS files.
+    Returns dict with key 'js_tags'.
+    """
+    js_tags = set()
+    script_sources = []
+    if BeautifulSoup is not None:
+        soup = BeautifulSoup(html, "html.parser")
+        for s in soup.find_all('script'):
+            src = s.get('src')
+            if src:
+                script_sources.append(src)
+            else:
+                if s.string:
+                    script_sources.append(s.string)
+    else:
+        # crude fallback: find <script ...> blocks
+        for m in re.finditer(r"<script[^>]*>(.*?)</script>", html, re.DOTALL | re.IGNORECASE):
+            script_sources.append(m.group(1))
+
+    # helper to scan a JS text blob
+    def scan_js_text(js_text: str):
+        if not js_text:
+            return
+        # customElements.define('my-tag' ...)
+        for m in re.finditer(r"customElements\.define\(['\"]([a-zA-Z0-9\-]+)['\"]", js_text):
+            js_tags.add(m.group(1).lower())
+        # document.createElement('my-tag')
+        for m in re.finditer(r"createElement\(['\"]([a-zA-Z0-9\-]+)['\"]\)", js_text):
+            js_tags.add(m.group(1).lower())
+
+    # scan inline scripts first
+    for blob in [s for s in script_sources if not (s and (s.strip().startswith('http') or s.strip().startswith('/')) )]:
+        scan_js_text(blob)
+
+    # optionally fetch external scripts
+    if fetch_external:
+        for src in [s for s in script_sources if s and not s.strip().startswith('<')]:
+            try:
+                # resolve relative URL if base_url provided
+                if base_url and not src.startswith('http'):
+                    from urllib.parse import urljoin
+                    src_url = urljoin(base_url, src)
+                else:
+                    src_url = src
+                r = requests.get(src_url, timeout=10)
+                if r.status_code == 200:
+                    scan_js_text(r.text)
+            except Exception:
+                continue
+
+    return {"js_tags": sorted(js_tags)}
+
+
 def scan_single_url_selenium(url: str, show_browser: bool = False, wait_after: float = WAIT_AFTER_LOAD) -> Dict[str, Any]:
     """Use Selenium to render and extract dynamic content."""
     result = {
@@ -152,7 +210,7 @@ def scan_single_url_selenium(url: str, show_browser: bool = False, wait_after: f
         "custom_attributes": [],
         "saved_html": None,
         "error": None,
-    "fetched_at": datetime.now(timezone.utc).isoformat()
+        "fetched_at": datetime.now(timezone.utc).isoformat()
     }
 
     driver = None
@@ -228,6 +286,26 @@ def scan_single_url_selenium(url: str, show_browser: bool = False, wait_after: f
         result["custom_attributes"] = attrs
         result["registered_custom_elements"] = registered
 
+        # JS extraction: scan inline and (optionally) external scripts
+        try:
+            js_info = extract_from_js(html, base_url=url, fetch_external=EXTERNAL_JS_FETCH)
+            result["js_tags"] = js_info.get("js_tags", [])
+            # merge js tags with DOM tags
+            merged_tags = list(dict.fromkeys(merged_tags + result["js_tags"]))
+            result["custom_tags"] = merged_tags
+        except Exception:
+            result["js_tags"] = []
+
+        # optional screenshot
+        if SCREENSHOT_ENABLED:
+            try:
+                shot_name = safe_filename(url) + ".png"
+                shot_path = HTML_DIR / shot_name
+                driver.save_screenshot(str(shot_path))
+                result["screenshot"] = str(shot_path)
+            except Exception:
+                result["screenshot"] = None
+
         # save HTML
         filename = safe_filename(url) + ".html"
         path = HTML_DIR / filename
@@ -273,6 +351,13 @@ def scan_single_url_requests(url: str, wait_after: float = WAIT_AFTER_LOAD) -> D
         info = extract_from_html(html)
         result["custom_tags"] = info.get("tags", [])
         result["custom_attributes"] = info.get("attrs", [])
+        try:
+            js_info = extract_from_js(html, base_url=url, fetch_external=EXTERNAL_JS_FETCH)
+            result["js_tags"] = js_info.get("js_tags", [])
+            # merge js tags into custom tags
+            result["custom_tags"] = list(dict.fromkeys(result["custom_tags"] + result["js_tags"]))
+        except Exception:
+            result["js_tags"] = []
 
         # save HTML
         filename = safe_filename(url) + ".html"
