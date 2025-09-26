@@ -36,6 +36,14 @@ try:
     SELENIUM_AVAILABLE = True
 except Exception:
     SELENIUM_AVAILABLE = False
+else:
+    # import common exceptions for finer-grained handling
+    try:
+        from selenium.common.exceptions import SessionNotCreatedException, WebDriverException
+    except Exception:
+        # fallback names if import fails
+        SessionNotCreatedException = Exception
+        WebDriverException = Exception
 
 # ------------- Config defaults -------------
 OUTPUT_DIR = Path("khoba_output")
@@ -85,6 +93,22 @@ def make_driver(show_browser: bool = False):
     driver = webdriver.Chrome(service=service, options=opts)
     driver.set_page_load_timeout(NAV_TIMEOUT)
     return driver
+
+
+def check_selenium_driver():
+    """Attempt to create and quit a driver once to validate chromedriver/browser compatibility.
+    Returns True if a driver can be created and started, False otherwise.
+    """
+    try:
+        drv = make_driver(show_browser=False)
+        try:
+            drv.quit()
+        except Exception:
+            pass
+        return True
+    except Exception as e:
+        logging.warning("Selenium driver check failed: %s", e)
+        return False
 
 
 def extract_from_html(html: str) -> Dict[str, List[str]]:
@@ -297,10 +321,17 @@ def main():
     logging.info(f"Loaded {len(urls)} urls from {args.input}")
 
     results = []
-    # Choose method based on availability
+    # Choose method based on availability and driver/browser compatibility
     use_selenium = SELENIUM_AVAILABLE
     if use_selenium:
-        logging.info("Selenium is available: using Selenium-based rendering")
+        # Validate that a driver can actually be created (handles chromedriver/browser mismatches)
+        ok = check_selenium_driver()
+        if ok:
+            logging.info("Selenium is available and driver is compatible: using Selenium-based rendering")
+            use_selenium = True
+        else:
+            logging.warning("Selenium detected but driver/browser incompatible; falling back to requests (no JS)")
+            use_selenium = False
     else:
         logging.info("Selenium not available: using static requests fallback (no JS)")
 
