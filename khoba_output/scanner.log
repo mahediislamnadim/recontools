@@ -1,0 +1,30 @@
+2025-09-26 16:04:17,409 INFO: Loaded 1 urls from /tmp/ctf_test_urls.txt
+2025-09-26 16:04:17,409 INFO: Selenium not available: using static requests fallback (no JS)
+2025-09-26 16:04:17,411 INFO: [requests] Fetching: http://example.com
+2025-09-26 16:04:18,052 INFO: [requests] Done: http://example.com -> tags: 0, attrs: 1
+2025-09-26 16:04:18,054 INFO: Saved JSON -> khoba_output/results.json CSV -> khoba_output/results.csv HTMLs -> /home/kali/Desktop/STUDY_PROGRM/khoba_output/html
+2025-09-26 16:04:57,525 INFO: Loaded 1 urls from /tmp/ctf_test_urls.txt
+2025-09-26 16:04:57,525 INFO: Selenium not available: using static requests fallback (no JS)
+2025-09-26 16:04:57,526 INFO: [requests] Fetching: http://vulnweb.com
+2025-09-26 16:04:58,499 INFO: [requests] Done: http://vulnweb.com -> tags: 0, attrs: 1
+2025-09-26 16:04:58,500 INFO: Saved JSON -> khoba_output/results.json CSV -> khoba_output/results.csv HTMLs -> /home/kali/Desktop/STUDY_PROGRM/khoba_output/html
+2025-09-26 16:14:10,160 INFO: Loaded 1 urls from /tmp/ctf_test_urls.txt
+2025-09-26 16:14:10,160 INFO: Selenium not available: using static requests fallback (no JS)
+2025-09-26 16:14:10,163 INFO: [requests] Fetching: http://example.com
+2025-09-26 16:14:10,842 INFO: [requests] Done: http://example.com -> tags: 0, attrs: 1
+2025-09-26 16:14:10,844 INFO: Saved JSON -> khoba_output/results.json CSV -> khoba_output/results.csv HTMLs -> /home/kali/Desktop/STUDY_PROGRM/khoba_output/html
+2025-09-26 16:15:07,042 INFO: Loaded 1 urls from /tmp/ctf_test_urls.txt
+2025-09-26 16:15:07,043 INFO: Selenium not available: using static requests fallback (no JS)
+2025-09-26 16:15:07,044 INFO: [requests] Fetching: http://example.com
+2025-09-26 16:15:07,608 INFO: [requests] Done: http://example.com -> tags: 0, attrs: 1
+2025-09-26 16:15:07,609 INFO: Saved JSON -> khoba_output/results.json CSV -> khoba_output/results.csv HTMLs -> /home/kali/Desktop/STUDY_PROGRM/khoba_output/html
+2025-09-26 16:15:49,853 INFO: Loaded 1 urls from /tmp/ctf_test_urls.txt
+2025-09-26 16:15:49,853 INFO: Selenium not available: using static requests fallback (no JS)
+2025-09-26 16:15:49,854 INFO: [requests] Fetching: http://vulnweb.com
+2025-09-26 16:15:50,687 INFO: [requests] Done: http://vulnweb.com -> tags: 0, attrs: 1
+2025-09-26 16:15:50,689 INFO: Saved JSON -> khoba_output/results.json CSV -> khoba_output/results.csv HTMLs -> /home/kali/Desktop/STUDY_PROGRM/khoba_output/html
+2025-09-26 16:20:07,866 INFO: Loaded 1 urls from /tmp/ctf_test_urls.txt
+2025-09-26 16:20:07,866 INFO: Selenium not available: using static requests fallback (no JS)
+2025-09-26 16:20:07,867 INFO: [requests] Fetching: http://vulnweb.com
+2025-09-26 16:20:08,536 INFO: [requests] Done: http://vulnweb.com -> tags: 0, attrs: 1
+2025-09-26 16:20:08,537 INFO: Saved JSON -> khoba_output/results.json CSV -> khoba_output/results.csv HTMLs -> /home/kali/Desktop/STUDY_PROGRM/khoba_output/html

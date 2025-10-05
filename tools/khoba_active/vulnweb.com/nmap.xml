@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE nmaprun>
+<?xml-stylesheet href="file:///usr/share/nmap/nmap.xsl" type="text/xsl"?>
+<!-- Nmap 7.95 scan initiated Sun Oct  5 16:41:11 2025 as: /usr/lib/nmap/nmap -&#45;privileged -Pn -sS -p 1-65535 -A -T4 -oA khoba_active/vulnweb.com/nmap vulnweb.com -->
+<nmaprun scanner="nmap" args="/usr/lib/nmap/nmap -&#45;privileged -Pn -sS -p 1-65535 -A -T4 -oA khoba_active/vulnweb.com/nmap vulnweb.com" start="1759660871" startstr="Sun Oct  5 16:41:11 2025" version="7.95" xmloutputversion="1.05">
+<scaninfo type="syn" protocol="tcp" numservices="65535" services="1-65535"/>

@@ -59,18 +59,33 @@ NAV_TIMEOUT = 30  # seconds (webdriver page_load_timeout)
 EXTERNAL_JS_FETCH = False
 SCREENSHOT_ENABLED = False
 FORCE_SELENIUM = False
+CHROMEDRIVER_PATH = None
+BROWSER_BINARY = None
 # -------------------------------------------
 
-# Ensure dirs exist before logging/file operations
-OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-HTML_DIR.mkdir(parents=True, exist_ok=True)
 
-# Logging
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s %(levelname)s: %(message)s",
-    handlers=[logging.StreamHandler(), logging.FileHandler(LOG_FILE, encoding="utf-8")]
-)
+def reconfigure_paths_and_logging(output_dir: str = None):
+    """Reconfigure output paths and logging after CLI args are parsed."""
+    global OUTPUT_DIR, HTML_DIR, CSV_PATH, JSON_PATH, LOG_FILE
+    # update paths if user passed an output dir
+    if output_dir:
+        OUTPUT_DIR = Path(output_dir)
+    HTML_DIR = OUTPUT_DIR / "html"
+    CSV_PATH = OUTPUT_DIR / "results.csv"
+    JSON_PATH = OUTPUT_DIR / "results.json"
+    LOG_FILE = OUTPUT_DIR / "scanner.log"
+
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    HTML_DIR.mkdir(parents=True, exist_ok=True)
+
+    # reconfigure logging to write to the selected log file
+    for h in logging.root.handlers[:]:
+        logging.root.removeHandler(h)
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s %(levelname)s: %(message)s",
+        handlers=[logging.StreamHandler(), logging.FileHandler(LOG_FILE, encoding="utf-8")]
+    )
 
 
 def safe_filename(url: str) -> str:
@@ -81,7 +96,7 @@ def safe_filename(url: str) -> str:
     return name
 
 
-def make_driver(show_browser: bool = False):
+def make_driver(show_browser: bool = False, chromedriver_path: str = None, browser_binary: str = None):
     opts = Options()
     if not show_browser:
         try:
@@ -93,8 +108,31 @@ def make_driver(show_browser: bool = False):
     opts.add_argument("--disable-dev-shm-usage")
     opts.add_argument("--window-size=1400,1000")
 
-    service = Service(ChromeDriverManager().install())
-    driver = webdriver.Chrome(service=service, options=opts)
+    # allow user to specify browser binary (useful for non-standard installs)
+    if browser_binary:
+        try:
+            opts.binary_location = browser_binary
+        except Exception:
+            # some selenium versions use different attribute name
+            try:
+                opts._binary_location = browser_binary
+            except Exception:
+                pass
+
+    # allow a user-provided chromedriver binary path
+    try:
+        if chromedriver_path:
+            service = Service(chromedriver_path)
+        else:
+            service = Service(ChromeDriverManager().install())
+    except Exception:
+        # webdriver-manager may fail or not be desired; try to rely on default Service
+        service = Service(chromedriver_path) if chromedriver_path else None
+
+    if service is not None:
+        driver = webdriver.Chrome(service=service, options=opts)
+    else:
+        driver = webdriver.Chrome(options=opts)
     driver.set_page_load_timeout(NAV_TIMEOUT)
     return driver
 
@@ -104,7 +142,8 @@ def check_selenium_driver():
     Returns True if a driver can be created and started, False otherwise.
     """
     try:
-        drv = make_driver(show_browser=False)
+        # make_driver will consult CHROMEDRIVER_PATH / BROWSER_BINARY if provided
+        drv = make_driver(show_browser=False, chromedriver_path=CHROMEDRIVER_PATH, browser_binary=BROWSER_BINARY)
         try:
             drv.quit()
         except Exception:
@@ -216,7 +255,7 @@ def scan_single_url_selenium(url: str, show_browser: bool = False, wait_after: f
     driver = None
     try:
         logging.info(f"[selenium] Scanning: {url}")
-        driver = make_driver(show_browser=show_browser)
+        driver = make_driver(show_browser=show_browser, chromedriver_path=CHROMEDRIVER_PATH, browser_binary=BROWSER_BINARY)
         driver.get(url)
         time.sleep(wait_after)
 
@@ -400,7 +439,23 @@ def main():
     ap.add_argument("--concurrency", type=int, default=CONCURRENCY, help="number of concurrent workers")
     ap.add_argument("--wait", type=float, default=WAIT_AFTER_LOAD, help="seconds to wait after page load")
     ap.add_argument("--show-browser", action="store_true", help="show browser for debugging")
+    ap.add_argument("--chromedriver-path", help="path to a chromedriver binary to use (optional)")
+    ap.add_argument("--browser-binary", help="path to a Chrome/Chromium binary to use (optional)")
+    ap.add_argument("--output", help="output directory (default: khoba_output)")
+    ap.add_argument("--fetch-external-js", action="store_true", help="fetch external JS files to detect custom elements")
+    ap.add_argument("--screenshot", action="store_true", help="save screenshots (selenium mode only)")
+    ap.add_argument("--force-selenium", action="store_true", help="try to force selenium even if driver check fails")
     args = ap.parse_args()
+
+    # wire CLI flags into globals and reconfigure paths/logging
+    global EXTERNAL_JS_FETCH, SCREENSHOT_ENABLED, FORCE_SELENIUM, CHROMEDRIVER_PATH, BROWSER_BINARY
+    CHROMEDRIVER_PATH = args.chromedriver_path
+    BROWSER_BINARY = args.browser_binary
+    EXTERNAL_JS_FETCH = bool(args.fetch_external_js)
+    SCREENSHOT_ENABLED = bool(args.screenshot)
+    FORCE_SELENIUM = bool(args.force_selenium)
+
+    reconfigure_paths_and_logging(output_dir=args.output)
 
     urls = read_urls(args.input)
     logging.info(f"Loaded {len(urls)} urls from {args.input}")
@@ -409,14 +464,17 @@ def main():
     # Choose method based on availability and driver/browser compatibility
     use_selenium = SELENIUM_AVAILABLE
     if use_selenium:
-        # Validate that a driver can actually be created (handles chromedriver/browser mismatches)
         ok = check_selenium_driver()
         if ok:
             logging.info("Selenium is available and driver is compatible: using Selenium-based rendering")
             use_selenium = True
         else:
-            logging.warning("Selenium detected but driver/browser incompatible; falling back to requests (no JS)")
-            use_selenium = False
+            if FORCE_SELENIUM:
+                logging.warning("Selenium detected but driver/browser incompatible; --force-selenium specified, attempting Selenium anyway")
+                use_selenium = True
+            else:
+                logging.warning("Selenium detected but driver/browser incompatible; falling back to requests (no JS)")
+                use_selenium = False
     else:
         logging.info("Selenium not available: using static requests fallback (no JS)")
 

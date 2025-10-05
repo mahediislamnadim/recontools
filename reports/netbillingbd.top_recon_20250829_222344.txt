@@ -1,0 +1,62 @@
+Passive Recon Report for netbillingbd.top
+==================================================
+
+[+] WHOIS Info:
+domain: netbillingbd.top
+registrar: NameSilo, LLC
+created: 2024-01-11 04:58:01, 2024-01-10 07:00:00
+emails: abuse@namesilo.com, pwp-dceb6ce474765ec4787906d0b328cd32@privacyguardian.org
+name_servers: ns1.dnsowl.com, ns2.dnsowl.com, ns3.dnsowl.com, NS1.DNSOWL.COM, NS2.DNSOWL.COM, NS3.DNSOWL.COM
+
+[+] DNS Info:
+A Record: 203.26.151.77
+IPv6: N/A
+
+[+] ASN Info:
+IP: 203.26.151.77
+ASN: AS150142 Wolast Technologies
+City: Dhaka
+Region: Dhaka Division
+Country: BD
+
+[+] HTTP Headers:
+Server: nginx/1.24.0 (Ubuntu)
+Date: Fri, 29 Aug 2025 16:23:31 GMT
+Content-Type: text/html; charset=UTF-8
+Transfer-Encoding: chunked
+Connection: keep-alive
+Vary: Accept-Encoding
+Cache-Control: private, must-revalidate
+pragma: no-cache
+expires: -1
+Set-Cookie: XSRF-TOKEN=eyJpdiI6Iko5blB2ajcvS0t5bHVEVitqQ2xCRlE9PSIsInZhbHVlIjoiZ2ErU0xYc09RTWNIOVdZV3lZUFRUUFFUaklTUVNtTGpDN3RLQitSdzFndEZYa2U2NHJ6SVRqSVFZMCtLYmJPL1U0Y2JETitEenByMkdFa1Y0b2syQVQxTlEwNEdwOWZ2ZzlsQ3IxMDhxUDFXS2toeCsrVndoWHhiQ2FwdVVrS0siLCJtYWMiOiI5YWFhMjcwZDkyYzUyMDIyN2I0MDNkNjI1OTFkODI2M2I5NGQ0ZjM5MWZiMzkzZGM3ZGNmZjYzZDBhYjhiOThkIiwidGFnIjoiIn0%3D; expires=Fri, 29 Aug 2025 18:23:31 GMT; Max-Age=7200; path=/; secure; samesite=lax, netbillingbd_session=eyJpdiI6IkpPaUE3Q3U5UEdHejRzeDk5elFLUkE9PSIsInZhbHVlIjoidVYvT0lYWjF3Ymt6VHg2TktWWEpCOFhhT3dSQXdaRUJjY3J5cStuWGNYOHp2L3pXU3hjeGtnaGJuSHhGVnpTUEVqakRMS1Nzd2pGdUJabFlSNmN6ZXFrWTFaUmY0QmdJSXg1RkwzR2JyTmVHalRKM2F0a0t1bVNzTE81dEhiVmMiLCJtYWMiOiJmZjYyOTY0NzVkZThmNjMzZjE4MzFjNGZiY2JjMTkwZGFkYjQyZTc4ZTg1YzI4MWE3NTI2NTkyMTg2NmJiNThiIiwidGFnIjoiIn0%3D; expires=Fri, 29 Aug 2025 18:23:31 GMT; Max-Age=7200; path=/; secure; httponly; samesite=lax
+X-Frame-Options: SAMEORIGIN
+X-Content-Type-Options: nosniff
+Content-Encoding: gzip
+status_code: 200
+url: https://netbillingbd.top/
+
+[+] Subdomains:
+*.netbillingbd.top
+netbillingbd.top
+user.netbillingbd.top
+
+[+] Wayback URLs:
+https://netbillingbd.top/themes/adminlte3/js/adminlte.min.js
+https://netbillingbd.top/plugins/bootstrap-5.3.2/bootstrap.min.css
+https://netbillingbd.top/plugins/login-page/img/login-16/wave.svg
+https://netbillingbd.top/plugins/bootstrap-4.6.2/js/bootstrap.bundle.min.js
+https://netbillingbd.top/plugins/ts-particles/tsparticles.bundle.min.js
+https://netbillingbd.top/plugins/jquery/jquery.min.js
+https://netbillingbd.top/plugins/ts-particles/jquery.js
+https://netbillingbd.top/
+https://netbillingbd.top/plugins/sweetalert2/sweetalert2.all.min.js
+https://netbillingbd.top/plugins/fontawesome-6/css/all.min.css
+http://netbillingbd.top/card
+https://netbillingbd.top/plugins/login-page/img/login-16/img-16.jfif
+http://netbillingbd.top/register
+https://netbillingbd.top/plugins/login-page/css/skins/default.css
+http://netbillingbd.top/forgot-password
+http://netbillingbd.top/login
+https://netbillingbd.top/plugins/login-page/css/login-16.css
+https://netbillingbd.top/themes/adminlte3/css/adminlte.min.css

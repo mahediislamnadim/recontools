@@ -1,0 +1,15 @@
+[
+  {
+    "url": "http://vulnweb.com",
+    "ok": true,
+    "status": 200,
+    "custom_tags": [],
+    "registered_custom_elements": [],
+    "custom_attributes": [
+      "http-equiv"
+    ],
+    "saved_html": "khoba_output/html/http___vulnweb.com.html",
+    "error": null,
+    "fetched_at": "2025-09-26T10:20:07.867702+00:00"
+  }
+]
