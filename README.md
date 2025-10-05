@@ -1,3 +1,72 @@
+# active-recon
+
+This repository contains active and passive reconnaissance helpers and orchestration scripts.
+
+Primary artifact in this workspace:
+
+- `tools/active_recon_scan.sh` - powerful bash-based active recon orchestration. It runs `nmap`, `nikto`, `whatweb`, `gobuster`/`dirb`, `curl` headers, optional TLS checks (`sslscan`/`sslyze`), and saves outputs under a per-target directory.
+
+Quick usage
+
+```bash
+# dry-run and show full commands
+bash tools/active_recon_scan.sh --dry-run --show-commands -t example.com
+
+# run aggressively (extra nmap scripts, ssl checks)
+bash tools/active_recon_scan.sh --aggressive -t example.com -o /tmp/outdir
+
+# use custom wordlist and extra nmap args
+bash tools/active_recon_scan.sh -t example.com --wordlist /tmp/mywordlist.txt --nmap-args "-sV"
+```
+
+Key flags
+
+- `-t, --target` : target hostname or file with targets (one per line) (required)
+- `-o, --output` : output directory (default `khoba_active`)
+- `--dry-run` : print commands instead of executing
+- `--show-commands` : print the fully-expanded command lines
+- `--aggressive` : enable extra nmap scripts, TLS checks, and higher gobuster threads
+- `--wordlist` : path to wordlist for directory discovery (default `/usr/share/wordlists/dirb/common.txt`)
+- `--nmap-args` : extra args to append to nmap
+- `--gobuster-args` : extra args to append to gobuster
+- `-c, --concurrency` : max parallel targets when processing a file (default 10)
+
+Notes
+
+- The script checks for presence of external tools and skips missing tools with a warning.
+- Use `--dry-run` + `--show-commands` to preview exactly what will be executed before running a scan that hits external infrastructure.
+
+How to publish to GitHub from this folder
+
+Option A — Quick (using GitHub CLI `gh`):
+
+1. Authenticate locally:
+
+```bash
+gh auth login
+```
+
+2. Create and push the repo (replace owner/name as appropriate):
+
+```bash
+gh repo create mahediislamnadim/active-recon --public --source=. --remote=origin --push
+```
+
+Option B — Create repo on GitHub web UI:
+
+1. Create a new repository named `active-recon` in your account via https://github.com/new
+2. From this folder run (replace URL):
+
+```bash
+git remote set-url origin https://github.com/mahediislamnadim/active-recon.git
+git push -u origin main
+```
+
+If you want me to push the commits for you, create the remote on GitHub and paste the HTTPS repo URL here; I will update the remote and push.
+
+License
+
+MIT — see LICENSE if present.
 # recontools
 
 Pro Passive Recon Tool — a lightweight passive reconnaissance script for Bug Bounty and pentest workflows.
