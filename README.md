@@ -1,25 +1,48 @@
-# active-recon
+# active-recon (passive + active recon toolkit)
 
-This repository contains active and passive reconnaissance helpers and orchestration scripts.
+This repository collects a set of reconnaissance helpers useful for bug bounties and pentests. It now includes both passive recon scripts and an opinionated active recon orchestration script.
 
-Primary artifact in this workspace:
+Contents overview
 
-- `tools/active_recon_scan.sh` - powerful bash-based active recon orchestration. It runs `nmap`, `nikto`, `whatweb`, `gobuster`/`dirb`, `curl` headers, optional TLS checks (`sslscan`/`sslyze`), and saves outputs under a per-target directory.
+- `recon1.0.py` (previously `Test.py`) — passive recon helper (WHOIS, DNS, crt.sh, Wayback, headers, ASN) that writes timestamped reports to `reports/`.
+- `tools/ctf_scanner.py` — auxiliary scanner that extracts interesting HTML tags/attributes from URLs (static requests mode + optional Selenium dynamic mode).
+- `tools/active_recon_scan.sh` — active recon orchestrator that runs `nmap`, `nikto`, `whatweb`, `gobuster`/`dirb`, `curl` headers, optional TLS checks (`sslscan`/`sslyze`), and saves structured outputs per target.
 
-Quick usage
+Quick start
+
+1. Create a Python virtualenv and install requirements for the Python tools (Selenium optional):
 
 ```bash
-# dry-run and show full commands
-bash tools/active_recon_scan.sh --dry-run --show-commands -t example.com
-
-# run aggressively (extra nmap scripts, ssl checks)
-bash tools/active_recon_scan.sh --aggressive -t example.com -o /tmp/outdir
-
-# use custom wordlist and extra nmap args
-bash tools/active_recon_scan.sh -t example.com --wordlist /tmp/mywordlist.txt --nmap-args "-sV"
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
 ```
 
-Key flags
+2. Passive recon (single target):
+
+```bash
+python recon1.0.py -d example.com
+# or if you still have Test.py: python Test.py -d example.com
+```
+
+3. Static HTML extraction (ctf scanner):
+
+```bash
+printf "http://example.com\n" > urls.txt
+python3 tools/ctf_scanner.py -i urls.txt --concurrency 4
+```
+
+4. Active recon orchestration (bash):
+
+```bash
+# preview commands (safe)
+bash tools/active_recon_scan.sh --dry-run --show-commands -t example.com
+
+# real run (aggressive mode enables extra nmap scripts and TLS checks)
+bash tools/active_recon_scan.sh --aggressive -t example.com -o /tmp/outdir
+```
+
+Key flags for the active orchestrator
 
 - `-t, --target` : target hostname or file with targets (one per line) (required)
 - `-o, --output` : output directory (default `khoba_active`)
@@ -33,29 +56,19 @@ Key flags
 
 Notes
 
-- The script checks for presence of external tools and skips missing tools with a warning.
-- Use `--dry-run` + `--show-commands` to preview exactly what will be executed before running a scan that hits external infrastructure.
+- External tools (nmap, nikto, gobuster/dirb, whatweb, curl, sslscan/sslyze) must be installed separately. The script checks for their presence and skips missing tools.
+- Use `--dry-run` + `--show-commands` to preview commands before executing against live targets.
 
-How to publish to GitHub from this folder
+Publishing to GitHub
 
 Option A — Quick (using GitHub CLI `gh`):
 
-1. Authenticate locally:
-
 ```bash
 gh auth login
-```
-
-2. Create and push the repo (replace owner/name as appropriate):
-
-```bash
 gh repo create mahediislamnadim/active-recon --public --source=. --remote=origin --push
 ```
 
-Option B — Create repo on GitHub web UI:
-
-1. Create a new repository named `active-recon` in your account via https://github.com/new
-2. From this folder run (replace URL):
+Option B — Create the repo in the GitHub web UI and push from this folder:
 
 ```bash
 git remote set-url origin https://github.com/mahediislamnadim/active-recon.git
